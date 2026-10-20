@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build plan: Tabbed benefits</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1f1f1f;--muted:#6b6b6b;--line:#e4e2dc;--accent:#2f5d50;--accent-soft:#e6f0ec;--new:#1f6f43;--upd:#9a5b00;--warn:#b42318;--rc:#fbf8ef}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+code{font:13px ui-monospace,SFMono-Regular,Menlo,monospace;background:#efede8;padding:1px 5px;border-radius:4px}
+.top{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.top .name{display:flex;align-items:center;gap:6px}.top input{font:inherit;padding:6px 9px;border:1px solid var(--line);border-radius:6px;min-width:170px}
+.top button,.btn{font:inherit;padding:6px 11px;border:1px solid var(--line);border-radius:6px;background:#fff;cursor:pointer}.top button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.top .state{margin-left:auto;color:var(--muted);font-size:13px}
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;max-width:1500px;margin:0 auto;padding:22px 20px 80px}
+nav.toc{position:sticky;top:64px;align-self:start;font-size:13px}nav.toc h4{margin:0 0 6px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:11px}
+nav.toc a{display:block;padding:4px 8px;color:var(--ink);text-decoration:none;border-left:2px solid transparent}nav.toc a:hover,nav.toc a.on{border-color:var(--accent);background:var(--accent-soft)}
+header.doc h1{font-size:28px;margin:0 0 6px}header.doc .lead{font-size:16px;color:#333;margin:0 0 8px}header.doc .meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:13px}header.doc .meta b{color:var(--ink);font-weight:600}
+.how{margin:14px 0 6px;padding:10px 14px;background:var(--accent-soft);border-radius:8px;font-size:14px}
+.notice{display:none;margin:10px 0;padding:10px 14px;background:#fff4e5;border:1px solid #f0c88a;border-radius:8px;font-size:14px}
+section.plan-sec{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:18px 0}
+section.plan-sec h2{font-size:19px;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}h3{font-size:14px;margin:16px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tbl-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid var(--line);padding:7px 9px;vertical-align:top;text-align:left}
+th{background:#f1efe9;font-weight:600;white-space:nowrap}table.settings td.group{font-weight:600;background:#faf9f6;white-space:nowrap}table.settings td.setting{min-width:150px}table.settings td.type{white-space:nowrap}table.settings td.value{min-width:170px}table.settings td.note{min-width:140px;color:#444}
+.pill{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid transparent}.pill.new{background:#e3f3e8;color:var(--new)}.pill.update{background:#fff1dc;color:var(--upd)}.pill.none{display:none}
+th.rc,td.rc{background:var(--rc);min-width:190px}th.rc{position:relative;padding-right:26px}th.rc .x{position:absolute;right:4px;top:4px;border:0;background:none;color:var(--muted);cursor:pointer;font-size:14px}
+th.rc-head-anchor,td.rc-anchor{display:none}
+textarea{font:inherit;width:100%;border:1px solid var(--line);border-radius:6px;padding:6px 8px;resize:vertical;background:#fff;min-height:34px}textarea:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+td.rc textarea{min-height:32px;border-color:#eadfbf}.others{margin-top:4px;font-size:12px;color:#444}.others div{padding:2px 6px;border-left:2px solid #d9c98c;margin-top:2px;background:#fff}
+.logic{margin-top:14px;padding:12px 14px;border:1px dashed #cfcac0;border-radius:8px;background:#fcfbf8}.logic h3{margin-top:0}.logic .proposed{margin:0 0 8px;font-size:14px;color:#333}
+.sec-note{margin-top:14px}.sec-note h3{margin-top:0}
+pre.tree{background:#f1efe9;padding:12px;border-radius:8px;overflow:auto;font-size:13px}
+ul.questions{list-style:none;padding:0;margin:0}ul.questions li{padding:8px 0;border-bottom:1px solid var(--line)}ul.questions label{display:flex;gap:8px;align-items:flex-start}ul.questions textarea{margin-top:6px}
+dialog{border:1px solid var(--line);border-radius:10px;padding:18px;max-width:760px;width:92vw}dialog textarea{min-height:260px;font:13px ui-monospace,Menlo,monospace}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:8px 14px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
+@media (max-width:900px){.layout{grid-template-columns:1fr}nav.toc{position:static;display:flex;flex-wrap:wrap;gap:4px}nav.toc h4{display:none}}
+@media print{.top,nav.toc,.how,.notice{display:none}section.plan-sec{break-inside:avoid;border:0;padding:0}td.rc textarea{border:0}}
+</style></head>
+<body data-sync="">
+<div class="top">
+  <label class="name"><span id="s-reviewer"></span> <input id="reviewer" type="text" autocomplete="name"></label>
+  <button id="btn-md" class="primary"></button>
+  <button id="btn-export"></button>
+  <button id="btn-import"></button>
+  <button id="btn-clear"></button>
+  <span class="state"><span id="count">0</span> <span id="s-count"></span> · <span id="store-state"></span></span>
+</div>
+<div class="layout">
+  <nav class="toc"><h4 id="s-toc"></h4><a href="#settings-section">Section settings</a><a href="#block-tab">Tab (group block, private)</a><a href="#notes">Notes</a><a href="#structure">Block structure</a><a href="#setup">Merchant setup</a><a href="#behaviour">Behaviour, responsive, RTL</a><a href="#placement">Reuse &amp; code placement</a><a href="#performance">Performance</a><a href="#questions">Risks &amp; open questions</a></nav>
+  <main>
+    <header class="doc"><h1>Build plan: Tabbed benefits</h1><p class="lead">Section mới, 2 theme block riêng (Tab, Benefit), 15 section settings, kế thừa collection-pills và tab-row.</p><div class="meta"><span><b>Theme</b> Purity</span><span><b>Branch</b> feat/session-created</span><span><b>Figma</b> Pets / Brand (1:1073)</span><span><b>Section tham chiếu</b> collection-pills</span><span><b>Ngày</b> 2026-10-20</span><span><b>Phiên bản plan</b> 1</span></div>
+      <div class="how" id="how"></div><div class="notice" id="notice"></div></header>
+    <section class="plan-sec" id="settings-section" data-section="settings-section"><h2>Section settings</h2><div class="tbl-wrap"><table class="settings" data-table="section"><thead><tr><th>Group</th><th>Setting</th><th>Type</th><th>Value</th><th>Note</th><th>Status</th><th class="rc-head-anchor"></th></tr></thead><tbody><tr data-row="general-section-width" data-label="Section width"><td class="group" rowspan="2">General</td><td class="setting">Section width</td><td class="type"><code>select</code></td><td class="value">Fixed width (df) / Stretch width / Full width</td><td class="note"></td><td class="status"><span class="pill none"></span></td><td class="rc-anchor"></td></tr><tr data-row="general-color-scheme" data-label="Color scheme"><td class="setting">Color scheme</td><td class="type"><code>color_scheme</code></td><td class="value">df: default-color-scheme</td><td class="note"></td><td class="status"><span class="pill none"></span></td><td class="rc-anchor"></td></tr><tr data-row="content-heading" data-label="Heading"><td class="group" rowspan="1">Content</td><td class="setting">Heading</td><td class="type"><code>text</code></td><td class="value">df: Tabbed benefits</td><td class="note"></td><td class="status"><span class="pill new">New</span></td><td class="rc-anchor"></td></tr><tr data-row="media-image-width-on-desktop" data-label="Image width on desktop"><td class="group" rowspan="1">Media</td><td class="setting">Image width on desktop</td><td class="type"><code>range</code></td><td class="value">300 - 600 / step 5 / df 475 (px)</td><td class="note">visible_if: Image ratio != Adapt</td><td class="status"><span class="pill new">New</span></td><td class="rc-anchor"></td></tr></tbody></table></div><div class="logic" data-logic="section"><h3>Logic mong muốn</h3><p class="proposed"><strong>Đề xuất trong plan:</strong> Tab đầu tiên mở sẵn; đổi tab bằng click hoặc phím mũi tên; nội dung tab nằm trong &lt;template&gt; và chỉ render khi mở.</p><textarea class="logic-input" rows="3" placeholder="Mô tả cách section này nên hoạt động, điều gì khác với plan, điều kiện ẩn/hiện, dữ liệu lấy từ đâu…"></textarea></div><div class="sec-note"></div></section><section class="plan-sec" id="block-tab" data-section="block-tab"><h2>Tab (group block, private)</h2><div class="tbl-wrap"><table class="settings" data-table="block:tab"><thead><tr><th>Group</th><th>Setting</th><th>Type</th><th>Value</th><th>Note</th><th>Status</th><th class="rc-head-anchor"></th></tr></thead><tbody><tr data-row="tab-tab-label" data-label="Tab label"><td class="group" rowspan="2">Tab</td><td class="setting">Tab label</td><td class="type"><code>text</code></td><td class="value">df: Tab label</td><td class="note">names the block in the sidebar</td><td class="status"><span class="pill new">New</span></td><td class="rc-anchor"></td></tr><tr data-row="tab-image" data-label="Image"><td class="setting">Image</td><td class="type"><code>image_picker</code></td><td class="value"></td><td class="note">placeholder when blank</td><td class="status"><span class="pill none"></span></td><td class="rc-anchor"></td></tr></tbody></table></div><div class="logic" data-logic="block:tab"><h3>Logic mong muốn</h3><p class="proposed"><strong>Đề xuất trong plan:</strong> Mỗi tab render nút tab + template nội dung; benefits là block con.</p><textarea class="logic-input" rows="2" placeholder="Logic mong muốn cho block này (hiển thị, giới hạn, hành vi khi thiếu nội dung…)"></textarea></div><div class="sec-note"></div></section><section class="plan-sec" id="notes" data-section="notes"><h2>Notes</h2><ul><li>Section mới; blocks là theme block riêng (<code>_</code> prefix).</li><li>max_blocks 6; preset có 3 tab × 4 benefit.</li></ul><div class="sec-note"></div></section><section class="plan-sec" id="structure" data-section="structure"><h2>Block structure</h2><pre class="tree">tabbed-benefits (section)            sections/tabbed-benefits.liquid   [new]
+└─ Tab ×1–6 (group block)            blocks/_tabbed-benefits-tab.liquid [new]
+    └─ Benefit ×0–n                   blocks/_tabbed-benefits-item.liquid [new]</pre><div class="sec-note"></div></section><section class="plan-sec" id="setup" data-section="setup"><h2>Merchant setup</h2><ol><li>Add section → Tabbed benefits (preset: 3 tab, 12 benefit, placeholder).</li><li>Đổi heading, ảnh từng tab, tiêu đề và mô tả benefit.</li><li>Gắn link nút.</li></ol><div class="sec-note"></div></section><section class="plan-sec" id="behaviour" data-section="behaviour"><h2>Behaviour, responsive, RTL</h2><div class="tbl-wrap"><table class="plain"><thead><tr><th>Case</th><th>Plan</th></tr></thead><tbody><tr><td>Desktop ≥1025</td><td>3 cột: benefit lẻ trái, ảnh giữa, benefit chẵn phải</td></tr><tr><td>Mobile &lt;576</td><td>1 cột, tab row cuộn ngang</td></tr><tr><td>RTL</td><td>logical properties; phím mũi tên đảo chiều</td></tr></tbody></table></div><div class="sec-note"></div></section><section class="plan-sec" id="placement" data-section="placement"><h2>Reuse &amp; code placement</h2><div class="tbl-wrap"><table class="plain"><thead><tr><th>Piece</th><th>Where</th><th>Why</th><th>Size</th></tr></thead><tbody><tr><td>Static CSS</td><td>{% stylesheet %}</td><td>AGENTS.md + grid-banner</td><td>~2.5 KB</td></tr><tr><td>Tabs JS</td><td>tab-row trong theme.js</td><td>đã có, chỉ vá ARIA</td><td>+0.6 KB</td></tr></tbody></table></div><div class="sec-note"></div></section><section class="plan-sec" id="performance" data-section="performance"><h2>Performance</h2><div class="tbl-wrap"><table class="plain"><thead><tr><th>Budget</th><th>Plan</th></tr></thead><tbody><tr><td>CSS</td><td>≤ 3 KB, chỉ tải cùng section</td></tr><tr><td>JS</td><td>0 file mới</td></tr><tr><td>Images</td><td>responsive-image, lazy, sizes theo cột</td></tr><tr><td>CLS</td><td>0</td></tr></tbody></table></div><div class="sec-note"></div></section><section class="plan-sec" id="questions" data-section="questions"><h2>Risks &amp; open questions</h2><ul class="questions"><li data-q="q1"><label><input type="checkbox" class="q-check"> <span>Giữ nút CTA theo từng tab hay một nút chung?</span></label><textarea class="q-note" rows="1" data-ph="q_note_ph"></textarea></li><li data-q="q2"><label><input type="checkbox" class="q-check"> <span>Có cần tuỳ chọn ẩn divider không?</span></label><textarea class="q-note" rows="1" data-ph="q_note_ph"></textarea></li></ul><div class="sec-note"></div></section>
+  </main>
+</div>
+<dialog id="panel"><h3 id="panel-title" style="margin-top:0"></h3><textarea id="panel-text"></textarea>
+  <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end"><button class="btn" id="panel-ok"></button><button class="btn" id="panel-close">×</button></div></dialog>
+<input type="file" id="file" accept="application/json" hidden>
+<div class="toast" id="toast"></div>
+<script id="plan-data" type="application/json">{"id": "tabbed-benefits", "version": 1, "columns": ["Comment"], "title": "Build plan: Tabbed benefits", "lang": "vi"}</script>
+<script id="plan-strings" type="application/json">{"reviewer": "Người review", "reviewer_ph": "Tên bạn", "add_col": "+ Thêm cột", "col_name": "Tên cột mới (ví dụ: Note của Huân)", "remove_col": "Bỏ cột", "logic_h": "Logic mong muốn", "logic_ph": "Mô tả cách section này nên hoạt động, điều gì khác với plan, điều kiện ẩn/hiện, dữ liệu lấy từ đâu…", "logic_block_ph": "Logic mong muốn cho block này (hiển thị, giới hạn, hành vi khi thiếu nội dung…)", "proposed": "Đề xuất trong plan", "section_note": "Góp ý cho phần này", "section_note_ph": "Nhận xét, yêu cầu đổi, câu hỏi…", "export_json": "Xuất JSON", "import_json": "Nhập JSON", "copy_md": "Copy góp ý (Markdown)", "clear": "Xoá góp ý của tôi", "saved": "Đã lưu trong trình duyệt", "saved_mem": "Trình duyệt chặn lưu cục bộ: góp ý chỉ giữ đến khi đóng trang, hãy Xuất JSON", "synced": "Đã đồng bộ", "sync_err": "Không đồng bộ được, vẫn lưu cục bộ", "count": "góp ý", "others": "Góp ý khác", "copied": "Đã copy. Dán vào chat hoặc gửi cho người làm section.", "status": "Trạng thái", "questions_h": "Câu hỏi mở", "q_note_ph": "Trả lời / ghi chú", "toc": "Mục lục", "settings_section": "Section settings", "settings_block": "Block settings", "how": "Cách góp ý: gõ vào cột Comment (hoặc thêm cột riêng), ghi logic mong muốn dưới mỗi bảng, tick câu hỏi mở. Góp ý tự lưu trong trình duyệt này; bấm “Copy góp ý” hoặc “Xuất JSON” để gửi lại.", "imported": "Đã nhập góp ý của", "confirm_clear": "Xoá toàn bộ góp ý của bạn trên plan này?", "name_first": "Nhập tên người review trước.", "meta_theme": "Theme", "meta_branch": "Branch", "meta_figma": "Figma", "meta_ref": "Section tham chiếu", "meta_date": "Ngày", "meta_version": "Phiên bản plan"}</script>
+<script>
+(function(){
+const PLAN=JSON.parse(document.getElementById('plan-data').textContent);
+const S=JSON.parse(document.getElementById('plan-strings').textContent);
+const KEY='plan-review:'+PLAN.id+':'+PLAN.version, RKEY='plan-review:reviewer';
+const SYNC=new URLSearchParams(location.search).get('sync')||document.body.dataset.sync||'';
+let storage=null;try{localStorage.setItem('__t','1');localStorage.removeItem('__t');storage=localStorage;}catch(e){}
+const mem={};
+const load=k=>{try{return storage?storage.getItem(k):mem[k]||null;}catch(e){return mem[k]||null;}};
+const save=(k,v)=>{mem[k]=v;try{storage&&storage.setItem(k,v);}catch(e){}};
+let state=null;try{state=JSON.parse(load(KEY)||'null');}catch(e){}
+if(!state||state.id!==PLAN.id)state={id:PLAN.id,version:PLAN.version,columns:PLAN.columns.slice(),reviewers:{}};
+(PLAN.columns||[]).forEach(c=>{if(!state.columns.includes(c))state.columns.push(c);});
+let me=load(RKEY)||'';
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const t=(id,key)=>{const el=$(id);if(el)el.textContent=S[key];};
+t('#s-reviewer','reviewer');t('#btn-md','copy_md');t('#btn-export','export_json');t('#btn-import','import_json');t('#btn-clear','clear');t('#s-count','count');t('#s-toc','toc');t('#how','how');
+$('#reviewer').placeholder=S.reviewer_ph;$('#reviewer').value=me;$('#panel-ok').textContent='OK';
+$$('.q-note').forEach(x=>x.placeholder=S.q_note_ph);
+$('#notice').textContent=S.saved_mem;if(!storage)$('#notice').style.display='block';
+const toast=m=>{const e=$('#toast');e.textContent=m;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600);};
+const R=()=>{if(!me)return null;const r=state.reviewers[me]||(state.reviewers[me]={cells:{},logic:{},notes:{},questions:{},updatedAt:0});return r;};
+const touch=()=>{const r=R();if(r)r.updatedAt=Date.now();};
+let syncTimer=null;
+function persist(){save(KEY,JSON.stringify(state));count();$('#store-state').textContent=storage?S.saved:S.saved_mem;if(SYNC){clearTimeout(syncTimer);syncTimer=setTimeout(push,1500);}}
+function count(){let n=0;Object.values(state.reviewers).forEach(r=>{Object.values(r.cells).forEach(t=>Object.values(t).forEach(row=>Object.values(row).forEach(v=>{if(v.trim())n++;})));Object.values(r.logic).forEach(v=>{if(v.trim())n++;});Object.values(r.notes).forEach(v=>{if(v.trim())n++;});Object.values(r.questions).forEach(q=>{if(q.checked||(q.note||'').trim())n++;});});$('#count').textContent=n;}
+function cellVal(rev,tid,rid,col){const r=state.reviewers[rev];return r&&r.cells[tid]&&r.cells[tid][rid]&&r.cells[tid][rid][col]||'';}
+function grow(ta){ta.style.height='auto';ta.style.height=Math.max(32,ta.scrollHeight+2)+'px';}
+function renderColumns(){
+  $$('table.settings').forEach(tbl=>{const tid=tbl.dataset.table;
+    $$('th.rc',tbl).forEach(x=>x.remove());$$('td.rc',tbl).forEach(x=>x.remove());
+    const hrow=$('thead tr',tbl), anchorH=$('th.rc-head-anchor',tbl);
+    state.columns.forEach(col=>{const th=document.createElement('th');th.className='rc';th.textContent=col;
+      if(state.columns.length>1){const x=document.createElement('button');x.className='x';x.title=S.remove_col;x.textContent='×';x.onclick=()=>{if(confirm(S.remove_col+' "'+col+'"?')){state.columns=state.columns.filter(c=>c!==col);persist();renderColumns();}};th.appendChild(x);}
+      hrow.insertBefore(th,anchorH);});
+    const add=document.createElement('th');add.className='rc';add.style.minWidth='0';add.innerHTML='<button class="btn" style="white-space:nowrap">'+S.add_col+'</button>';
+    add.querySelector('button').onclick=()=>{const n=prompt(S.col_name);if(n&&n.trim()&&!state.columns.includes(n.trim())){state.columns.push(n.trim());persist();renderColumns();}};
+    hrow.insertBefore(add,anchorH);
+    $$('tbody tr',tbl).forEach(tr=>{const rid=tr.dataset.row, anchor=$('td.rc-anchor',tr);
+      state.columns.forEach(col=>{const td=document.createElement('td');td.className='rc';
+        const ta=document.createElement('textarea');ta.rows=1;ta.value=cellVal(me,tid,rid,col);ta.disabled=!me;
+        ta.oninput=()=>{const r=R();if(!r)return;((r.cells[tid]=r.cells[tid]||{})[rid]=r.cells[tid][rid]||{})[col]=ta.value;touch();persist();grow(ta);};
+        td.appendChild(ta);
+        const others=Object.keys(state.reviewers).filter(n=>n!==me&&cellVal(n,tid,rid,col).trim());
+        if(others.length){const o=document.createElement('div');o.className='others';others.forEach(n=>{const d=document.createElement('div');d.textContent=n+': '+cellVal(n,tid,rid,col);o.appendChild(d);});td.appendChild(o);}
+        tr.insertBefore(td,anchor);requestAnimationFrame(()=>grow(ta));});
+      const pad=document.createElement('td');pad.className='rc';pad.style.minWidth='0';tr.insertBefore(pad,anchor);});
+  });
+}
+function renderBoxes(){
+  $$('.logic').forEach(box=>{const tid=box.dataset.logic;const ta=$('.logic-input',box);const r=state.reviewers[me];ta.value=r&&r.logic[tid]||'';ta.disabled=!me;
+    ta.oninput=()=>{const r=R();if(!r)return;r.logic[tid]=ta.value;touch();persist();};
+    $$('.others',box).forEach(x=>x.remove());const others=Object.keys(state.reviewers).filter(n=>n!==me&&(state.reviewers[n].logic[tid]||'').trim());
+    if(others.length){const o=document.createElement('div');o.className='others';o.innerHTML='<b>'+S.others+'</b>';others.forEach(n=>{const d=document.createElement('div');d.textContent=n+': '+state.reviewers[n].logic[tid];o.appendChild(d);});box.appendChild(o);}});
+  $$('.sec-note').forEach(box=>{const sid=box.closest('[data-section]').dataset.section;box.innerHTML='<h3>'+S.section_note+'</h3>';
+    const ta=document.createElement('textarea');ta.rows=1;ta.placeholder=S.section_note_ph;const r=state.reviewers[me];ta.value=r&&r.notes[sid]||'';ta.disabled=!me;
+    ta.oninput=()=>{const r=R();if(!r)return;r.notes[sid]=ta.value;touch();persist();grow(ta);};box.appendChild(ta);requestAnimationFrame(()=>grow(ta));
+    const others=Object.keys(state.reviewers).filter(n=>n!==me&&(state.reviewers[n].notes[sid]||'').trim());
+    if(others.length){const o=document.createElement('div');o.className='others';others.forEach(n=>{const d=document.createElement('div');d.textContent=n+': '+state.reviewers[n].notes[sid];o.appendChild(d);});box.appendChild(o);}});
+  $$('ul.questions li').forEach(li=>{const qid=li.dataset.q;const cb=$('.q-check',li),ta=$('.q-note',li);const r=state.reviewers[me];const q=r&&r.questions[qid]||{};cb.checked=!!q.checked;ta.value=q.note||'';cb.disabled=ta.disabled=!me;
+    const upd=()=>{const r=R();if(!r)return;r.questions[qid]={checked:cb.checked,note:ta.value};touch();persist();};cb.onchange=upd;ta.oninput=()=>{upd();grow(ta);};
+    $$('.others',li).forEach(x=>x.remove());const others=Object.keys(state.reviewers).filter(n=>n!==me&&(state.reviewers[n].questions[qid]||{}).note);
+    if(others.length){const o=document.createElement('div');o.className='others';others.forEach(n=>{const d=document.createElement('div');d.textContent=n+': '+(state.reviewers[n].questions[qid].checked?'☑ ':'☐ ')+state.reviewers[n].questions[qid].note;o.appendChild(d);});li.appendChild(o);}});
+}
+function renderAll(){renderColumns();renderBoxes();count();$('#store-state').textContent=storage?S.saved:S.saved_mem;}
+$('#reviewer').addEventListener('change',e=>{me=e.target.value.trim();save(RKEY,me);renderAll();});
+function rowLabel(tid,rid){const tr=$('table[data-table="'+CSS.escape(tid)+'"] tr[data-row="'+CSS.escape(rid)+'"]');const g=tr&&tr.querySelector('td.group');return (tr?tr.dataset.label:rid)+(g?' ('+g.textContent.trim()+')':'');}
+function tableTitle(tid){const tbl=$('table[data-table="'+CSS.escape(tid)+'"]');return tbl?tbl.closest('section').querySelector('h2').textContent:tid;}
+function sectionTitle(sid){const s=$('[data-section="'+CSS.escape(sid)+'"] h2');return s?s.textContent:sid;}
+function toMarkdown(){const out=['# '+S.count.charAt(0).toUpperCase()+S.count.slice(1)+': '+PLAN.title+' (v'+PLAN.version+')',''];
+  Object.entries(state.reviewers).forEach(([name,r])=>{out.push('## '+name,'');
+    Object.entries(r.cells).forEach(([tid,rows])=>{const lines=[];Object.entries(rows).forEach(([rid,cols])=>Object.entries(cols).forEach(([col,v])=>{if(v.trim())lines.push('- **'+rowLabel(tid,rid)+'** · '+col+': '+v.trim().replace(/\n/g,' '));}));
+      if(lines.length){out.push('### '+tableTitle(tid));out.push(...lines,'');}});
+    Object.entries(r.logic).forEach(([tid,v])=>{if(v.trim())out.push('### '+S.logic_h+' — '+tableTitle(tid),v.trim(),'');});
+    Object.entries(r.notes).forEach(([sid,v])=>{if(v.trim())out.push('### '+sectionTitle(sid),v.trim(),'');});
+    const qs=Object.entries(r.questions).filter(([,q])=>q.checked||(q.note||'').trim());
+    if(qs.length){out.push('### '+S.questions_h);qs.forEach(([qid,q])=>{const li=$('li[data-q="'+CSS.escape(qid)+'"] span');out.push('- ['+(q.checked?'x':' ')+'] '+(li?li.textContent:qid)+(q.note?' → '+q.note.trim():''));});out.push('');}});
+  return out.join('\n');}
+window.collectFeedback=()=>({state,markdown:toMarkdown()});
+function panel(title,text,onOk){$('#panel-title').textContent=title;$('#panel-text').value=text;$('#panel-ok').onclick=()=>{onOk&&onOk($('#panel-text').value);$('#panel').close();};$('#panel-close').onclick=()=>$('#panel').close();$('#panel').showModal();}
+$('#btn-md').onclick=async()=>{const md=toMarkdown();try{await navigator.clipboard.writeText(md);toast(S.copied);}catch(e){}panel(S.copy_md,md);};
+$('#btn-export').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=PLAN.id+'-v'+PLAN.version+'-feedback'+(me?'-'+me.replace(/\W+/g,'_'):'')+'.json';a.click();panel(S.export_json,JSON.stringify(state,null,2));};
+function merge(other){if(!other||other.id!==PLAN.id)return 0;let n=0;(other.columns||[]).forEach(c=>{if(!state.columns.includes(c))state.columns.push(c);});
+  Object.entries(other.reviewers||{}).forEach(([name,r])=>{const cur=state.reviewers[name];if(!cur||(r.updatedAt||0)>=(cur.updatedAt||0)){state.reviewers[name]=r;n++;}});return n;}
+$('#btn-import').onclick=()=>$('#file').click();
+$('#file').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(txt=>{try{const o=JSON.parse(txt);const n=merge(o);persist();renderAll();toast(S.imported+' '+Object.keys(o.reviewers||{}).join(', ')+' ('+n+')');}catch(err){alert(err.message);}});e.target.value='';};
+$('#btn-clear').onclick=()=>{if(!me){alert(S.name_first);return;}if(confirm(S.confirm_clear)){delete state.reviewers[me];persist();renderAll();}};
+async function push(){try{const r=await fetch(SYNC+(SYNC.includes('?')?'&':'?')+'plan='+encodeURIComponent(PLAN.id)+'&v='+PLAN.version,{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(state)});$('#store-state').textContent=r.ok?S.synced:S.sync_err;}catch(e){$('#store-state').textContent=S.sync_err;}}
+async function pull(){try{const r=await fetch(SYNC+(SYNC.includes('?')?'&':'?')+'plan='+encodeURIComponent(PLAN.id)+'&v='+PLAN.version);if(r.ok){const o=await r.json();if(merge(o)){save(KEY,JSON.stringify(state));renderAll();}$('#store-state').textContent=S.synced;}}catch(e){}}
+const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){$$('nav.toc a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+en.target.id));}});},{rootMargin:'-20% 0px -70% 0px'});
+$$('section.plan-sec').forEach(s=>io.observe(s));
+renderAll();if(SYNC)pull();
+})();
+</script>
+</body></html>
